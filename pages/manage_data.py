@@ -12,7 +12,7 @@ ADMIN_EMAIL = st.secrets["ADMIN_EMAIL"]
 DATABASE_URL = st.secrets["DATABASE_URL"]
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-engine = DATABASE_URL
+engine = create_engine(DATABASE_URL)
 
 # ---------------- SESSION ----------------
 if "user" not in st.session_state:
