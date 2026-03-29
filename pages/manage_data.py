@@ -5,14 +5,41 @@ from sqlalchemy import create_engine, inspect, text
 
 # ---------------- SUPABASE CONFIG ----------------
 
-# 🔐 Load from secrets
-SUPABASE_URL = st.secrets["SUPABASE_URL"]
-SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
-ADMIN_EMAIL = st.secrets["ADMIN_EMAIL"]
-DATABASE_URL = st.secrets["DATABASE_URL"]
+# ---------------- LOAD SECRETS ----------------
+SUPABASE_URL = st.secrets.get("SUPABASE_URL")
+SUPABASE_KEY = st.secrets.get("SUPABASE_KEY")
+ADMIN_EMAIL = st.secrets.get("ADMIN_EMAIL")
+DATABASE_URL = st.secrets.get("DATABASE_URL")
 
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-engine = create_engine(DATABASE_URL)
+# ---------------- VALIDATION ----------------
+if not SUPABASE_URL or not SUPABASE_KEY:
+    st.error("❌ Supabase credentials missing in secrets")
+    st.stop()
+
+if not DATABASE_URL:
+    st.error("❌ DATABASE_URL missing in secrets")
+    st.stop()
+
+if not isinstance(DATABASE_URL, str):
+    st.error("❌ DATABASE_URL must be a string")
+    st.stop()
+
+# ---------------- INIT CLIENTS ----------------
+try:
+    supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+except Exception as e:
+    st.error(f"❌ Supabase connection failed: {e}")
+    st.stop()
+
+try:
+    engine = create_engine(
+        DATABASE_URL,
+        pool_pre_ping=True,   # prevents broken connection
+        pool_recycle=300      # avoids timeout
+    )
+except Exception as e:
+    st.error(f"❌ Database connection failed: {e}")
+    st.stop()
 
 # ---------------- SESSION ----------------
 if "user" not in st.session_state:
