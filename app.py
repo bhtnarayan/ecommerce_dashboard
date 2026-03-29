@@ -15,7 +15,7 @@ st_autorefresh(interval=10000, key="refresh")
 # -------------------------------
 st.set_page_config(page_title="AI Sales Dashboard", layout="wide")
 
-DATABASE_URL = st.secrets["DATABASE_URL"]
+DATABASE_URL = st.secrets.get("DATABASE_URL")
 engine = DATABASE_URL
 
 df = pd.read_sql("SELECT * FROM sales", engine)
