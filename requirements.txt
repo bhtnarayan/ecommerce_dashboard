@@ -1,6 +1,7 @@
 streamlit
 plotly
-supabase
 pandas
+supabase
 sqlalchemy
 psycopg2-binary
+streamlit-autorefresh
